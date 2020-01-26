@@ -26,18 +26,22 @@ const addEarthquake = async (req, res) => {
 };
 
 const getEarthquake = async (req, res) => {
-  const { id } = req.params;
-  const earthquake = await Earthquake.findById(id).exec();
-  if (!earthquake) {
+  try {
+    const { id } = req.params;
+    const earthquake = await Earthquake.findById(id).exec();
+    if (!earthquake) {
+      return res.status(404).json("Earthquake not found!");
+    }
+    return res.json(earthquake);
+  } catch {
     return res.status(404).json("Earthquake not found!");
   }
-  return res.json(earthquake);
 };
 
 const getTopTenEarthquakes = async (req, res) => {
   const earthquakes = await Earthquake.find()
-    .sort({ "properties.time": -1 })
     .sort({ "properties.mag": -1 })
+    .sort({ "properties.time": -1 })
     .limit(10)
     .exec();
   return res.json(earthquakes);
@@ -65,9 +69,19 @@ const updateEarthquake = async (req, res) => {
   return res.json(updateEarthquake);
 };
 
+const retrieveAllEarthquakes = async (req, res) => {
+  try {
+    await Earthquake.insertMany(req.body);
+    return res.status(200).json("Earthquake retrieved successfully!");
+  } catch {
+    res.status(404).json("Failed to retrieve!");
+  }
+};
+
 module.exports = {
   addEarthquake,
   getEarthquake,
   getTopTenEarthquakes,
-  updateEarthquake
+  updateEarthquake,
+  retrieveAllEarthquakes
 };

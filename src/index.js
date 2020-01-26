@@ -13,7 +13,15 @@ const morganLog =
 
 app.use(helmet());
 app.use(morganLog);
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    methods: "GET,PUT,POST,OPTIONS",
+    allowedHeaders: "Content-Type,Authorization"
+  })
+);
+// app.use(cors());
 app.use(express.json());
 
 app.use("/api", routes);
